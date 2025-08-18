@@ -1,0 +1,28 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  namespace: bouvier
+  name: edit-bouvier
+rules:
+- apiGroups: ["", "apps", "route.openshift.io", "project.openshift.io"]
+  resources: ["pods", "services", "deployments", "routes", "configmaps"]
+  verbs: ["get", "list", "watch", "create", "update", "delete"]
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: edit-bouvier-binding
+  namespace: bouvier
+subjects:
+- kind: User
+  name: patty
+  apiGroup: rbac.authorization.k8s.io
+- kind: User
+  name: selma
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: edit-bouvier
+  apiGroup: rbac.authorization.k8s.io

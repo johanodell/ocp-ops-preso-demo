@@ -1,0 +1,45 @@
+# rbac-simpsson.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: marge-admin
+  namespace: simpson
+subjects:
+  - kind: User
+    name: marge
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: admin
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: editors
+  namespace: simpson
+subjects:
+  - kind: User
+    name: homer
+    apiGroup: rbac.authorization.k8s.io
+  - kind: User
+    name: lisa
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: edit
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: bart-viewer
+  namespace: simpson
+subjects:
+  - kind: User
+    name: bart
+    apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: ClusterRole
+  name: view
+  apiGroup: rbac.authorization.k8s.io

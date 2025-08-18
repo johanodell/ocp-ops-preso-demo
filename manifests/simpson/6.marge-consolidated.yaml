@@ -1,0 +1,108 @@
+apiVersion: v1
+data:
+  container-helper.yaml: |
+    ---
+    response: "Marge"
+    tcpchecks:
+      - name: homer.simpson
+        host: homer-service.simpson
+        port: 8080
+      - name: selma.bouvier
+        host: selma-service.bouvier
+        port: 8080
+      - name: patty.bouvier
+        host: patty-service.bouvier
+        port: 8080
+kind: ConfigMap
+metadata:
+  labels:
+    app: marge
+  name: marge-container-helper-yaml-d9f58dt7g8
+  namespace: simpson
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+  labels:
+    app: marge
+  name: marge-service
+  namespace: simpson
+spec:
+  ports:
+  - port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: marge
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+  labels:
+    app: marge
+  name: marge-deployment
+  namespace: simpson
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: marge
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+      creationTimestamp: null
+      labels:
+        app: marge
+    spec:
+      containers:
+      - env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        image: quay.io/openshift-examples/container-helper:ubi8-minimal
+        imagePullPolicy: Always
+        name: container-helper
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /container-helper/
+          name: container-helper-yaml
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - configMap:
+          name: marge-container-helper-yaml-d9f58dt7g8
+        name: container-helper-yaml
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+  labels:
+    app: marge
+  name: marge-route
+  namespace: simpson
+spec:
+  port:
+    targetPort: 8080
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+  to:
+    kind: Service
+    name: marge-service
+    weight: 100
+  wildcardPolicy: None
