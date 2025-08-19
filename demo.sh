@@ -77,7 +77,7 @@ echo -e "\n"
 wait
 clear
 wait
-echo "This is waht we will create" | lolcat
+echo "This is what we will create" | lolcat
 viu images/1.homer-ms.png
 wait
 pei "tree manifests/simpson"
