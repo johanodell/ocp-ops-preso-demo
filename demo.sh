@@ -137,7 +137,10 @@ wait
 echo "lets curl that route" | lolcat
 echo -e "\n"
 wait
-pei "curl -k https://homer-route-simpson.apps.mothershift.codell.io"
+NS="simpson"
+ROUTE="homer-route"
+HOMER_HOST="$(oc -n "$NS" get route "$ROUTE" -o jsonpath='{.spec.host}')"
+pei "curl -k https://${HOMER_HOST}"
 echo -e "\n"
 wait 
 clear
